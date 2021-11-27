@@ -1,42 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-
-export interface MovieInfo {
-  actors: string[];
-  release_date: Date;
-  plot: string;
-  genres: string[];
-  image_url: string;
-  directors: string[];
-  rating: number;
-  rank: number;
-  running_time_secs: number;
-}
-
-export interface Movie {
-  title: string;
-  year: number;
-  info: MovieInfo;
-}
-
-export interface StartKey {
-  title: string;
-  year: string;
-}
-
-export interface MovieResponse {
-  Items: Movie[];
-  Count: number;
-  LastEvaluatedKey: StartKey;
-}
-
-export interface MovieCacheEntry {
-  startKey: StartKey;
-  startRow: number;
-  length: number;
-  movies: Movie[];
-  endData: boolean;
-}
+import { Observable } from 'rxjs';
+import { Movie, MovieCacheEntry, MovieResponse, StartKey } from './movies.api';
 
 @Injectable({
   providedIn: 'root'
@@ -83,7 +48,19 @@ export class MoviesService {
   }
 
   getMovies(nextCacheParams: any = null) {
+    console.log('calling api with params ', nextCacheParams);
       let params = new HttpParams({ fromObject: nextCacheParams });
       return this.http.get<MovieResponse>('http://localhost:8081/movies', {params: params});
   }
+
+  query(search: any = null, nextCacheParams: any = null): Observable<MovieResponse> {
+    // for now, just return all emails for an account
+    let params = new HttpParams({ fromObject: search });
+    if (nextCacheParams) {
+      params = params.append('title', `${nextCacheParams.title}`);
+      params = params.append('year', `${nextCacheParams.year}`);
+    }
+    return this.http.get<MovieResponse>('http://localhost:8081/movies', { params: params });
+  }
+
 }
