@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Movie, MoviesService } from './movies.service';
 
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -9,15 +10,26 @@ import { Movie, MoviesService } from './movies.service';
 export class AppComponent implements OnInit {
   title = 'tigerapp';
   movies: Movie[];
+  startRow = 0;
+  lastKey;
 
   constructor(private moviesService: MoviesService) {}
 
   ngOnInit() {
     console.log('hi from onInit');
-    this.moviesService.getMovies().subscribe(data => {
-      console.log('got data', data);
-      this.movies = data;
-    })
+    this.movies = this.moviesService.getRows(this.startRow);
+  }
+
+  onNext() {
+    this.startRow += 10;
+    this.movies = this.moviesService.getRows(this.startRow);
+  }
+
+  onPrevious() {
+    if (this.startRow >= 10) {
+      this.startRow -= 10;
+      this.movies = this.moviesService.getRows(this.startRow);
+    }
   }
 
 }

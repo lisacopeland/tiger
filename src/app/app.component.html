@@ -1,22 +1,12 @@
 <h1>Hi from {{title}}</h1>
-<div>
+<div class="movie-dispay">
   <h1>Movies</h1>
-<p-table [value]="movies">
-    <ng-template pTemplate="header">
-        <tr>
-            <th>Title</th>
-            <th>Year</th>
-            <th>Actor</th>
-            <th>Rating</th>
-        </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-movie>
-        <tr>
-            <td>{{movie.title}}</td>
-            <td>{{movie.year}}</td>
-            <td>{{movie.info?.actors[0]}}</td>
-            <td>{{movie.info?.rating}}</td>
-        </tr>
-    </ng-template>
-</p-table>  
+  <div class="movie-row" *ngFor="let movie of movies">
+    {{movie.title}}
+    {{movie.year}}
+  </div>
+</div>
+<div>
+    <button type="button" (click)="onPrevious()">Previous</button>
+    <button type="button" (click)="onNext()">Next</button>
 </div>
