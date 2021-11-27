@@ -12,6 +12,7 @@ import { TableModule } from 'primeng/table';
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     AppRoutingModule,
     TableModule
