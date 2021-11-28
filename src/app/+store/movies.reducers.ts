@@ -59,18 +59,16 @@ export const moviesReducer = createReducer(
       return newState;
     }),
     on(setMoviesForwardAction, (state, action) => {
-        const newMovies = { ...state.movies, ...action.payload.Items}
-        const newState = { ...state, movies: newMovies }
-        if (action.payload.LastEvaluatedKey) {
-            const newKey: StartKeys = {
-              startKey: action.payload.LastEvaluatedKey,
-              firstRow: newState.lastStoredRow,
-              lastRow: newState.lastStoredRow + action.payload.Count
-            }
-            newState.startKeys = [...state.startKeys];
-            newState.startKeys.push(newKey);
+        const newState = {
+            ...state,
+            movies: [ ...state.movies, ...action.payload.Items],
+            lastStoredRow: state.lastStoredRow + action.payload.Count,
+            startKeys: [...state.startKeys, {
+                firstRow: 0,
+                lastRow: action.payload.Count,
+                startKey: action.payload.LastEvaluatedKey
+            }]
         };
-        newState.lastStoredRow += action.payload.Count;
         return newState;
     }),
     on(setCurrentRowRequest, (state, action) => {
