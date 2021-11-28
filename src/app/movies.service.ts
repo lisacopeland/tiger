@@ -1,21 +1,16 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Movie, MovieCacheEntry, MovieResponse, StartKey } from './movies.api';
+import { MovieResponse } from './movies.api';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MoviesService {
 
-  pageSize = 10;
-  movieCache: MovieCacheEntry[] = [];
-  lastEvaluatedKey: StartKey = null;
-  lastRow = 0;
-
   constructor(private http: HttpClient) { }
 
-  getRows(startRow: number) {
+/*   getRows(startRow: number) {
     let counter = 0;
 
     while (counter < this.movieCache.length) {
@@ -45,7 +40,7 @@ export class MoviesService {
       return newCache.movies.slice(startIndex, startIndex + 10);
     });
 
-  }
+  } */
 
   getMovies(nextCacheParams: any = null) {
     console.log('calling api with params ', nextCacheParams);

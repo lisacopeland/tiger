@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { filter } from 'rxjs/operators';
-import { loadMoviesAction, setCurrentRows } from './+store/movies.actions';
-import { selectCurrentMovies } from './+store/movies.reducers';
-// import { MoviesService } from './movies.service';
+import { loadMoviesAction, setCurrentRowRequest, setInitialRowRequest } from './+store/movies.actions';
+import { selectAllMovies, selectCurrentMovies } from './+store/movies.reducers';
 import { Movie } from './movies.api';
 
 @Component({
@@ -16,15 +15,13 @@ export class AppComponent implements OnInit {
   movies: Movie[];
   startRow = 0;
   lastRow = 10;
-  lastKey;
 
   constructor(public store: Store) {
-    this.store.dispatch(setCurrentRows({ payload: { firstRow: this.startRow, lastRow: this.lastRow } }));
+    this.store.dispatch(setInitialRowRequest({ payload: { firstRequestedRow: this.startRow, lastRequestedRow: this.lastRow } }));
     this.store.dispatch(loadMoviesAction({ search: {} }));
     this.store
       .pipe(
-        select(selectCurrentMovies),
-        filter((bool) => !!bool)
+        select(selectCurrentMovies)
       )
       .subscribe((movies) => {
         console.log('got movies: ', movies);
@@ -38,16 +35,20 @@ export class AppComponent implements OnInit {
   }
 
   onNext() {
+
     this.startRow += 10;
     this.lastRow += 10;
-    this.store.dispatch(setCurrentRows({ payload: { firstRow: this.startRow, lastRow: this.lastRow } }));
+    console.log('hi from next button, range: ', this.startRow, ' ', this.lastRow);
+    this.store.dispatch(setCurrentRowRequest({ payload: { firstRequestedRow: this.startRow, lastRequestedRow: this.lastRow } }));
   }
 
   onPrevious() {
+    console.log('hi from previous');
     if (this.startRow >= 10) {
       this.startRow -= 10;
       this.lastRow -= 10;
-      this.store.dispatch(setCurrentRows({ payload: { firstRow: this.startRow, lastRow: this.lastRow } }));
+      console.log('hi from prev button, range: ', this.startRow, ' ', this.lastRow);
+      this.store.dispatch(setCurrentRowRequest({ payload: { firstRequestedRow: this.startRow, lastRequestedRow: this.lastRow } }));
     }
   }
 

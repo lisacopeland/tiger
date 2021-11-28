@@ -28,6 +28,7 @@ export function mapToMovie(data: unknown): Movie {
     return new Movie(data);
 }
 export function mapToMovies(data: unknown[]): Movie[] {
+    console.log('hi from map - length is ', data.length);
     if (data.length) {
         const allData = data.map(mapToMovie);
         return allData;
@@ -36,7 +37,7 @@ export function mapToMovies(data: unknown[]): Movie[] {
     }
 }
 
-export interface StartKey {
+export interface StartKeyInterface {
     title: string;
     year: string;
 }
@@ -44,13 +45,13 @@ export interface StartKey {
 export interface MovieResponse {
     Items: Movie[];
     Count: number;
-    LastEvaluatedKey: StartKey;
+    LastEvaluatedKey: StartKeyInterface;
 }
 
-export interface MovieCacheEntry {
-    startKey: StartKey;
+/* export interface MovieCacheEntry {
+    startKey: StartKeyInterface;
     startRow: number;
     length: number;
     movies: Movie[];
     endData: boolean;
-}
+} */

@@ -6,9 +6,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { TableModule } from 'primeng/table';
 import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 import { moviesReducer } from './+store/movies.reducers';
 import { MoviesEffects } from './+store/movies.effects';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [
@@ -22,6 +24,7 @@ import { MoviesEffects } from './+store/movies.effects';
     TableModule,
     StoreModule.forRoot({ movies: moviesReducer }),
     EffectsModule.forRoot([MoviesEffects]),
+    StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production })
   ],
   providers: [],
   bootstrap: [AppComponent]
