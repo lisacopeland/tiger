@@ -5,34 +5,29 @@ import { Movie, MovieResponse, StartKeyInterface } from '../movies.api';
 export const ENTITY_TYPE_MOVIE = 'movie';
 
 export const loadMoviesAction = createAction(
-    'Movies: Load All',
+    'Movies: Load Initial',
     props<{ search: Partial<Movie> }>()
 );
 export const loadMoviesForwardAction = createAction(
-    'Movies: Load All',
+    'Movies: Load Movies Forward',
     props<{ search: Partial<Movie>, startKey: StartKeyInterface }>()
 );
 export const setMoviesAction = createAction(
-    'Movies: Set All',
+    'Movies: Set Movies',
     props<{ payload: MovieResponse, search:any }>()
 );
 export const setMoviesForwardAction = createAction(
-    'Movies: Add Movies Forward',
+    'Movies: Set Movies Forward',
     props<{ payload: MovieResponse }>()
 );
 
 export const setInitialRowRequest = createAction(
-    'Movies: Set Rows',
+    'Movies: Set Initial Row Request',
     props<{ payload: { firstRequestedRow: number, lastRequestedRow: number } }>()
 );
 
 // This is the component telling the store which rows it wants
 export const setCurrentRowRequest = createAction(
-    'Movies: Set Rows',
+    'Movies: Set Current Row Request',
     props<{ payload: { firstRequestedRow: number, lastRequestedRow: number }}>()
-)
-
-export const rowsInMemory = createAction(
-    'Movies: Everything in memory',
-    props<{ payload: {} }>()
 )

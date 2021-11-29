@@ -40,6 +40,18 @@ export class MoviesEffects {
                             return setMoviesForwardAction({ payload: response });
                         })
                     ); 
+                } else if (action.payload.firstRequestedRow < state.firstStoredRow) {
+                    // Find the startkey for the section before the one you're in
+                    const firstRow = action.payload.firstRequestedRow;
+                    const lastRow = action.payload.lastRequestedRow;
+                    const nextStartKey = state.startKeys.find(key => {
+                        return ((key.firstRow >= firstRow) && (key.lastRow <= lastRow))
+                    });
+                    return this.service.query(state.currentQuery, nextStartKey).pipe(
+                        map((response) => {
+                            return setMoviesForwardAction({ payload: response });
+                        })
+                    );
                 } else {
                     return EMPTY;
                 }

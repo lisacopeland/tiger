@@ -5,6 +5,8 @@ import { loadMoviesAction, setCurrentRowRequest, setInitialRowRequest } from './
 import { selectAllMovies, selectCurrentMovies } from './+store/movies.reducers';
 import { Movie } from './movies.api';
 
+const PAGE_SIZE = 20;
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -14,7 +16,7 @@ export class AppComponent implements OnInit {
   title = 'tigerapp';
   movies: Movie[];
   startRow = 0;
-  lastRow = 10;
+  lastRow = PAGE_SIZE;
 
   constructor(public store: Store) {
     this.store.dispatch(setInitialRowRequest({ payload: { firstRequestedRow: this.startRow, lastRequestedRow: this.lastRow } }));
@@ -36,17 +38,17 @@ export class AppComponent implements OnInit {
 
   onNext() {
 
-    this.startRow += 10;
-    this.lastRow += 10;
+    this.startRow += PAGE_SIZE;
+    this.lastRow += PAGE_SIZE;
     console.log('hi from next button, range: ', this.startRow, ' ', this.lastRow);
     this.store.dispatch(setCurrentRowRequest({ payload: { firstRequestedRow: this.startRow, lastRequestedRow: this.lastRow } }));
   }
 
   onPrevious() {
     console.log('hi from previous');
-    if (this.startRow >= 10) {
-      this.startRow -= 10;
-      this.lastRow -= 10;
+    if (this.startRow >= PAGE_SIZE) {
+      this.startRow -= PAGE_SIZE;
+      this.lastRow -= PAGE_SIZE;
       console.log('hi from prev button, range: ', this.startRow, ' ', this.lastRow);
       this.store.dispatch(setCurrentRowRequest({ payload: { firstRequestedRow: this.startRow, lastRequestedRow: this.lastRow } }));
     }

@@ -62,12 +62,12 @@ export const moviesReducer = createReducer(
         const newState = {
             ...state,
             movies: [ ...state.movies, ...action.payload.Items],
-            lastStoredRow: state.lastStoredRow + action.payload.Count,
             startKeys: [...state.startKeys, {
-                firstRow: 0,
-                lastRow: action.payload.Count,
+                firstRow: state.lastStoredRow,
+                lastRow: state.lastStoredRow + action.payload.Count,
                 startKey: action.payload.LastEvaluatedKey
-            }]
+            }],
+            lastStoredRow: state.lastStoredRow + action.payload.Count,
         };
         return newState;
     }),

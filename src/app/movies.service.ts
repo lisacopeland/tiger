@@ -50,10 +50,11 @@ export class MoviesService {
 
   query(search: any = null, nextCacheParams: any = null): Observable<MovieResponse> {
     // for now, just return all emails for an account
+    console.log('hi from query - nextCacheParams: ', nextCacheParams);
     let params = new HttpParams({ fromObject: search });
     if (nextCacheParams) {
-      params = params.append('title', `${nextCacheParams.title}`);
-      params = params.append('year', `${nextCacheParams.year}`);
+      params = params.append('title', `${nextCacheParams.startKey.title}`);
+      params = params.append('year', `${nextCacheParams.startKey.year}`);
     }
     return this.http.get<MovieResponse>('http://localhost:8081/movies', { params: params });
   }
