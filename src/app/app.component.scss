@@ -1,9 +1,13 @@
-.movie-display {
-    display: flex;
-    flex-direction: column;
+:host {
+  display: block;
+  padding: 0;
 }
 
-.movie-row {
-    display: flex;
-    flex-direction: row;
+.wrapper {
+  margin: 25px;
+
+}
+
+.nav-row {
+    margin-top: 24px;
 }

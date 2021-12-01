@@ -1,6 +1,6 @@
 import { createFeatureSelector, createReducer, createSelector, on } from "@ngrx/store";
 import { mapToMovies, Movie, StartKeyInterface } from "../movies.api";
-import { setMoviesForwardAction, loadMoviesAction, setMoviesAction, setCurrentRowRequest, setInitialRowRequest } from "./movies.actions";
+import { setMoviesForwardAction, loadMoviesInitialAction, setMoviesInitialAction, setCurrentRowRequest, setInitialRowRequest } from "./movies.actions";
 
 export interface StartKeys {
     firstRow: number;
@@ -14,15 +14,13 @@ export interface MoviesState {
     currentQuery: any;
     firstVisibleRow: number;
     lastVisibleRow: number;
-    firstStoredRow: number;
-    lastStoredRow:number;
+    lastRow: number; // The very last row in the data
 }
 
 const initialState: MoviesState = {
     firstVisibleRow: 0,
     lastVisibleRow: 0,
-    firstStoredRow: 0,
-    lastStoredRow: 0,
+    lastRow: -1,
     currentQuery: null,
     startKeys: [],
     movies: [],
@@ -32,47 +30,93 @@ export const MOVIES_FEATURE_KEY = 'movies';
 
 export const moviesReducer = createReducer(
     initialState,
-    on(loadMoviesAction, (state, action) => {
+    on(loadMoviesInitialAction, (state, action) => {
         console.log('hi from load movies action');
-        const newState = { ...state, movies: [], startKeys: [], firstStoredRow: 0, lastStoredRow: 0 }
+        const newState = { ...state, 
+            movies: [], 
+            startKeys: [], 
+            firstVisibleRow: 0, 
+            lastVisibleRow: 0,
+            lastRow: -1,
+            currentQuery: null,
+        }
         return newState;
     }),
-    on (setMoviesAction, (state, action) => {
+    on(setMoviesInitialAction, (state, action) => {
         console.log('hi from setMoviesaction');
-        const newState = { ...state, 
+        const newState = {
+            ...state,
             movies: action.payload.Items,
             currentQuery: action.search,
-            firstStoredRow: 0,
-            lastStoredRow: action.payload.Count,
-            startKeys: [{
-                firstRow: 0,
-                lastRow: action.payload.Count,
-                startKey: action.payload.LastEvaluatedKey
-         }]
+            firstVisibleRow: 0,
+            lastVisibleRow: action.payload.Count,
         };
+        const startKeys: StartKeys[] = [{
+            firstRow: 0,
+            lastRow: action.payload.Count,
+            startKey: { title: action.payload.Items[0].title,
+                        year: action.payload.Items[0].year.toString() }
+            }
+        ];
+        if (action.payload.LastEvaluatedKey) {
+            // The startkey you get back belongs to the next chunk
+            startKeys.push({
+                firstRow: action.payload.Count,
+                lastRow: -1,
+                startKey: action.payload.LastEvaluatedKey
+
+            });
+        } else {
+            newState.lastRow = action.payload.Count;
+        }
+        newState.startKeys = startKeys;
         return newState;
     }),
     on(setInitialRowRequest, (state, action) => {
-      const newState = {...state};
-      newState.firstVisibleRow = action.payload.firstRequestedRow;
-      newState.lastVisibleRow = action.payload.lastRequestedRow;
-      return newState;
+        const newState = { ...state };
+        newState.firstVisibleRow = action.payload.firstRequestedRow;
+        newState.lastVisibleRow = action.payload.lastRequestedRow;
+        return newState;
     }),
     on(setMoviesForwardAction, (state, action) => {
         const newState = {
             ...state,
-            movies: [ ...state.movies, ...action.payload.Items],
-            startKeys: [...state.startKeys, {
-                firstRow: state.lastStoredRow,
-                lastRow: state.lastStoredRow + action.payload.Count,
-                startKey: action.payload.LastEvaluatedKey
-            }],
-            lastStoredRow: state.lastStoredRow + action.payload.Count,
+            movies: [...action.payload.Items],
         };
+        // See if there is a startkey for this chunk
+        const newStartKeys = JSON.parse(JSON.stringify(newState.startKeys));
+        const startKey = newStartKeys.find(x => (x.firstRow === state.firstVisibleRow));
+        const lastEvaluatedKey = action.payload.LastEvaluatedKey;
+        if (lastEvaluatedKey === undefined) {
+            newState.lastRow = startKey.firstVisibleRow + action.payload.Count;
+            newState.lastVisibleRow = newState.lastRow;
+        }
+        // I don't see how I could not have a startKey unless I have problems
+        if (startKey !== undefined) {
+            if (startKey.lastRow === -1) {
+                startKey.lastRow = startKey.firstRow + action.payload.Count;
+                // Create the next key if this is the last chunk
+                if (lastEvaluatedKey) {
+                    const nextKey: StartKeys = {
+                        firstRow: startKey.lastRow,
+                        lastRow: -1,
+                        startKey: action.payload.LastEvaluatedKey
+                    }
+                    newStartKeys.push(nextKey);
+                } else {
+                    newState.lastRow = state.lastRow + action.payload.Count;
+                }
+            newState.startKeys = newStartKeys;    
+            }
+        } 
+
         return newState;
     }),
     on(setCurrentRowRequest, (state, action) => {
-        const newState = { ...state, firstVisibleRow: action.payload.firstRequestedRow, lastVisibleRow: action.payload.lastRequestedRow}
+        console.log('hi from setCurrentRowRequest, payload is ', action.payload);
+        const newState = { ...state, 
+            firstVisibleRow: action.payload.firstRequestedRow, 
+            lastVisibleRow: action.payload.lastRequestedRow }
         return newState;
     })
 );
@@ -92,31 +136,12 @@ export const selectAllMovies = createSelector(selectAll, (state) => {
     return retValue;
 });
 
-export const selectFirstStoredRow = createSelector(selectAll, (state) => state.firstStoredRow);
-export const selectLastStoredRow = createSelector(selectAll, (state) => state.lastStoredRow);
-
 export const selectLatestQuery = createSelector(selectAll, (state) => state.currentQuery);
 
 export const selectFirstVisibleRow = createSelector(selectAll, (state) => state.firstVisibleRow);
 export const selectLastVisibleRow = createSelector(selectAll, (state) => state.lastVisibleRow);
+export const selectLastRow = createSelector(selectAll, (state) => state.lastRow);
 
 export const selectCurrentVisibleRange = createSelector(
     selectFirstVisibleRow, selectLastVisibleRow, (first, last) => { return { first: first, last: last } });
 
-// Give me the movies in the rows I requested
-export const selectCurrentMovies = createSelector(
-    selectAllMovies, selectCurrentVisibleRange, (movies: Movie[], range) => {
-    if (movies) {
-        return movies.slice(range.first, range.last);
-    } else {
-        return null;
-    }
-});
-
-// Tell me what rows are in the store
-export const selectCurrentStoredRange = createSelector(
-    selectFirstStoredRow, selectLastStoredRow, (first, last) => { return {first: first, last: last} });
-
-export const selectLastStartKey = createSelector(selectAll, (state) => { 
-    return state.startKeys[length - 1] 
-});

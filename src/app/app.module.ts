@@ -11,6 +11,10 @@ import { EffectsModule } from '@ngrx/effects';
 import { moviesReducer } from './+store/movies.reducers';
 import { MoviesEffects } from './+store/movies.effects';
 import { environment } from 'src/environments/environment';
+import { ButtonModule } from 'primeng/button';
+import { FlexLayoutModule } from '@angular/flex-layout';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -21,7 +25,11 @@ import { environment } from 'src/environments/environment';
     BrowserAnimationsModule,
     HttpClientModule,
     AppRoutingModule,
+    FormsModule,
     TableModule,
+    ButtonModule,
+    InputNumberModule,
+    FlexLayoutModule, 
     StoreModule.forRoot({ movies: moviesReducer }),
     EffectsModule.forRoot([MoviesEffects]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production })

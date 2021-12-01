@@ -1,12 +1,52 @@
-<h1>Hi from {{title}}</h1>
-<div class="movie-dispay">
-  <h1>Movies</h1>
-  <div class="movie-row" *ngFor="let movie of movies">
-    {{movie.title}}
-    {{movie.year}}
+<div class="wrapper">
+  <div fxLayout="column">
+    <div fxLayout="row" fxLayoutAlign="space-between center">
+      <h1>Movies</h1>
+      <div>
+        <label for="integeronly">Filter on year</label>
+        <p-inputNumber inputId="integeronly" [(ngModel)]="searchYear">
+        </p-inputNumber>
+        <button
+          pButton
+          type="button"
+          label="Search"
+          icon="pi pi-search"
+          (click)="onSearchYear()"
+        ></button>
+      </div>
+    </div>
+    <ng-container *ngIf="(movies && movies.length); else noData">
+      <div
+        fxLayout="row"
+        fxLayoutAlign="start center"
+        fxLayoutGap="15px"
+        *ngFor="let movie of movies"
+      >
+        {{ movie.title }}
+        {{ movie.year }}
+      </div>
+    </ng-container>
+    <ng-template #noData> No Data Available! </ng-template>
   </div>
-</div>
-<div>
-    <button type="button" (click)="onPrevious()">Previous</button>
-    <button type="button" (click)="onNext()">Next</button>
+  <div
+    class="nav-row"
+    fxLayout="row"
+    fxLayoutAlign="start center"
+    fxLayoutGap="20px"
+  >
+    <button
+      pButton
+      type="button"
+      label="Previous"
+      [disabled]="!cangoback"
+      (click)="onPrevious()"
+    ></button>
+    <button
+      pButton
+      type="button"
+      label="Next"
+      [disabled]="!cangoforward"
+      (click)="onNext()"
+    ></button>
+  </div>
 </div>

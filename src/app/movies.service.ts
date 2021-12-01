@@ -10,38 +10,6 @@ export class MoviesService {
 
   constructor(private http: HttpClient) { }
 
-/*   getRows(startRow: number) {
-    let counter = 0;
-
-    while (counter < this.movieCache.length) {
-      if ((startRow >= this.movieCache[counter].startRow) && (startRow < this.movieCache[counter].startRow + this.movieCache[counter].length)) {
-        // data is in this cache, return the data from this one
-        // extract the data from startRow for 
-        const startIndex = startRow - this.movieCache[counter].startRow;
-        // What if there are not 10 left?
-        return this.movieCache[counter].movies.slice(startIndex, startIndex + 10);
-      }
-      counter++;
-    }
-    // If you get here, you need to use the lastEvaluatedKey of the last cache to get
-    // more
-    this.getMovies(this.lastEvaluatedKey).subscribe(data => {
-      const newCache: MovieCacheEntry = {
-        startRow: this.lastRow,
-        startKey: data.LastEvaluatedKey,
-        length: data.Count,
-        movies: data.Items,
-        endData: (data.LastEvaluatedKey === undefined)
-      };
-      this.lastRow = this.lastRow + data.Count;
-      this.lastEvaluatedKey = data.LastEvaluatedKey;
-      const startIndex = startRow - newCache.startRow;
-      this.movieCache.push(newCache);
-      return newCache.movies.slice(startIndex, startIndex + 10);
-    });
-
-  } */
-
   getMovies(nextCacheParams: any = null) {
     console.log('calling api with params ', nextCacheParams);
       let params = new HttpParams({ fromObject: nextCacheParams });
@@ -53,8 +21,8 @@ export class MoviesService {
     console.log('hi from query - nextCacheParams: ', nextCacheParams);
     let params = new HttpParams({ fromObject: search });
     if (nextCacheParams) {
-      params = params.append('title', `${nextCacheParams.startKey.title}`);
-      params = params.append('year', `${nextCacheParams.startKey.year}`);
+      params = params.append('startKeyTitle', `${nextCacheParams.startKey.title}`);
+      params = params.append('startKeyYear', `${nextCacheParams.startKey.year}`);
     }
     return this.http.get<MovieResponse>('http://localhost:8081/movies', { params: params });
   }
