@@ -3,7 +3,7 @@ import { select, Store } from '@ngrx/store';
 import { filter, map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
 import { loadMoviesInitialAction, setCurrentRowRequest, setInitialRowRequest } from './+store/movies.actions';
-import { selectAllMovies, selectFirstVisibleRow, selectLastRow } from './+store/movies.reducers';
+import { selectAllMovies, selectFirstVisibleRow, selectLastRow, selectNumberOfPages } from './+store/movies.reducers';
 import { Movie } from './movies.api';
 
 const PAGE_SIZE = 10;
@@ -13,11 +13,12 @@ const PAGE_SIZE = 10;
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'tigerapp';
   movies: Movie[];
   startRow = 0;
   lastRow = PAGE_SIZE;
+  numberOfPages = 0;
   lastDataRow = -1;
   cangoback = false;
   cangoforward = true;
@@ -31,7 +32,6 @@ export class AppComponent implements OnInit {
         select(selectAllMovies)
       )
       .subscribe((movies) => {
-        console.log('got movies: ', movies);
         this.movies = movies;
       });
 
@@ -50,33 +50,44 @@ export class AppComponent implements OnInit {
       .subscribe((lastRow) => {
         this.lastDataRow = lastRow;
         this.cangoforward = (this.lastDataRow === -1) || (this.lastRow < this.lastDataRow);
-        console.log('can go forward is ', this.cangoforward);
       });
+
+    this.store
+      .pipe(
+        select(selectNumberOfPages)
+      )
+      .subscribe((numberOfPages) => {
+        this.numberOfPages = numberOfPages;
+      });
+
     }
 
-  ngOnInit() {
-    console.log('hi from onInit');
-  }
-
-  onNext() {
+  onNext($event) {
     this.startRow += PAGE_SIZE;
     if (this.lastDataRow === -1) {
       this.lastRow += PAGE_SIZE;
     } else {
       this.lastRow = ((this.lastRow + PAGE_SIZE) > this.lastDataRow) ? this.lastDataRow : this.lastRow + PAGE_SIZE;
     } 
-    console.log('hi from next button, range: ', this.startRow, ' ', this.lastRow);
     this.store.dispatch(setCurrentRowRequest({ payload: { firstRequestedRow: this.startRow } }));
   }
 
-  onPrevious() {
-    console.log('hi from previous');
+  onPrevious($event) {
     if (this.startRow >= PAGE_SIZE) {
       this.startRow -= PAGE_SIZE;
       this.lastRow -= PAGE_SIZE;
-      console.log('hi from prev button, range: ', this.startRow, ' ', this.lastRow);
       this.store.dispatch(setCurrentRowRequest({ payload: { firstRequestedRow: this.startRow } }));
     } 
+  }
+
+  onGotoPage($event) {
+    if ($event === 'first' || $event === 1) {
+      this.startRow = 0;
+    } else if ($event !== 'last') {
+      this.startRow = (parseInt($event) - 1) * PAGE_SIZE
+    }
+    this.lastRow = this.startRow + PAGE_SIZE;
+    this.store.dispatch(setCurrentRowRequest({ payload: { firstRequestedRow: this.startRow } }));
   }
 
   onSearchYear() {

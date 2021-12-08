@@ -28,7 +28,6 @@ export function mapToMovie(data: unknown): Movie {
     return new Movie(data);
 }
 export function mapToMovies(data: unknown[]): Movie[] {
-    console.log('hi from map - length is ', data.length);
     if (data.length) {
         const allData = data.map(mapToMovie);
         return allData;

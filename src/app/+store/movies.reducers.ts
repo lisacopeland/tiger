@@ -30,7 +30,6 @@ export const MOVIES_FEATURE_KEY = 'movies';
 export const moviesReducer = createReducer(
     initialState,
     on(loadMoviesInitialAction, (state, action) => {
-        console.log('hi from load movies action');
         const newState = {
             ...state,
             movies: [],
@@ -43,7 +42,6 @@ export const moviesReducer = createReducer(
         return newState;
     }),
     on(setMoviesInitialAction, (state, action) => {
-        console.log('hi from setMoviesinitialaction');
         const newState = {
             ...state,
             movies: action.payload.Items,
@@ -101,7 +99,6 @@ export const moviesReducer = createReducer(
         return newState;
     }),
     on(setInitialRowRequest, (state, action) => {
-        console.log('hi from setInitialRowRequest, payload is ', action.payload);
         const newState = {
             ...state,
             firstVisibleRow: action.payload.firstRequestedRow
@@ -109,7 +106,6 @@ export const moviesReducer = createReducer(
         return newState;
     }),
     on(setCurrentRowRequest, (state, action) => {
-        console.log('hi from setCurrentRowRequest, payload is ', action.payload);
         const newState = {
             ...state,
             firstVisibleRow: action.payload.firstRequestedRow
@@ -127,14 +123,11 @@ export const selectAll = createSelector(
 
 // Just give me all movies in the store
 export const selectAllMovies = createSelector(selectAll, (state) => {
-    console.log('hi from selectAllMovies');
-    const retValue = mapToMovies(state.movies);
-    console.log('returning ', retValue);
-    return retValue;
+    return mapToMovies(state.movies);
 });
 
 export const selectLatestQuery = createSelector(selectAll, (state) => state.currentQuery);
-
 export const selectFirstVisibleRow = createSelector(selectAll, (state) => state.firstVisibleRow);
 export const selectLastRow = createSelector(selectAll, (state) => state.lastRow);
+export const selectNumberOfPages = createSelector(selectAll, (state) => state.startKeys.length);
 

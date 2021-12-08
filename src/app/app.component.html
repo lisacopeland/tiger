@@ -28,25 +28,13 @@
     </ng-container>
     <ng-template #noData> No Data Available! </ng-template>
   </div>
-  <div
-    class="nav-row"
-    fxLayout="row"
-    fxLayoutAlign="start center"
-    fxLayoutGap="20px"
-  >
-    <button
-      pButton
-      type="button"
-      label="Previous"
-      [disabled]="!cangoback"
-      (click)="onPrevious()"
-    ></button>
-    <button
-      pButton
-      type="button"
-      label="Next"
-      [disabled]="!cangoforward"
-      (click)="onNext()"
-    ></button>
-  </div>
+<app-paginator 
+  [cangoback]="cangoback" 
+  [cangoforward]="cangoforward"
+  [showLast]="lastDataRow !== -1"
+  [numberOfPages]="numberOfPages"
+  (goForward)="onNext($event)"
+  (goBack)="onPrevious($event)"
+  (goToPage)="onGotoPage($event)">
+</app-paginator>
 </div>

@@ -15,10 +15,12 @@ import { ButtonModule } from 'primeng/button';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FormsModule } from '@angular/forms';
+import { PaginatorComponent } from './paginator/paginator.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    PaginatorComponent
   ],
   imports: [
     BrowserModule,
