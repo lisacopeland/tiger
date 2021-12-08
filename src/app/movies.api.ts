@@ -45,13 +45,6 @@ export interface StartKeyInterface {
 export interface MovieResponse {
     Items: Movie[];
     Count: number;
+    last: boolean;
     LastEvaluatedKey: StartKeyInterface;
 }
-
-/* export interface MovieCacheEntry {
-    startKey: StartKeyInterface;
-    startRow: number;
-    length: number;
-    movies: Movie[];
-    endData: boolean;
-} */

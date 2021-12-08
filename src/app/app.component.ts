@@ -3,7 +3,7 @@ import { select, Store } from '@ngrx/store';
 import { filter, map } from 'rxjs/operators';
 import { combineLatest } from 'rxjs';
 import { loadMoviesInitialAction, setCurrentRowRequest, setInitialRowRequest } from './+store/movies.actions';
-import { selectAllMovies, selectCurrentVisibleRange, selectLastRow } from './+store/movies.reducers';
+import { selectAllMovies, selectFirstVisibleRow, selectLastRow } from './+store/movies.reducers';
 import { Movie } from './movies.api';
 
 const PAGE_SIZE = 10;
@@ -24,7 +24,7 @@ export class AppComponent implements OnInit {
   searchYear = 0;
 
   constructor(public store: Store) {
-    this.store.dispatch(setInitialRowRequest({ payload: { firstRequestedRow: this.startRow, lastRequestedRow: this.lastRow } }));
+    this.store.dispatch(setInitialRowRequest({ payload: { firstRequestedRow: 0 } }));
     this.store.dispatch(loadMoviesInitialAction({ search: {} }));
     this.store
       .pipe(
@@ -37,11 +37,10 @@ export class AppComponent implements OnInit {
 
     this.store
       .pipe(
-        select(selectCurrentVisibleRange)
+        select(selectFirstVisibleRow)
       )
-      .subscribe((range) => {
-        console.log('hi from selectCurrentVisibleRange, range ', range);
-        this.cangoback = (range.first > 0);
+      .subscribe((firstRow) => {
+        this.cangoback = (firstRow > 0);
       });
 
     this.store
@@ -67,7 +66,7 @@ export class AppComponent implements OnInit {
       this.lastRow = ((this.lastRow + PAGE_SIZE) > this.lastDataRow) ? this.lastDataRow : this.lastRow + PAGE_SIZE;
     } 
     console.log('hi from next button, range: ', this.startRow, ' ', this.lastRow);
-    this.store.dispatch(setCurrentRowRequest({ payload: { firstRequestedRow: this.startRow, lastRequestedRow: this.lastRow } }));
+    this.store.dispatch(setCurrentRowRequest({ payload: { firstRequestedRow: this.startRow } }));
   }
 
   onPrevious() {
@@ -76,14 +75,14 @@ export class AppComponent implements OnInit {
       this.startRow -= PAGE_SIZE;
       this.lastRow -= PAGE_SIZE;
       console.log('hi from prev button, range: ', this.startRow, ' ', this.lastRow);
-      this.store.dispatch(setCurrentRowRequest({ payload: { firstRequestedRow: this.startRow, lastRequestedRow: this.lastRow } }));
+      this.store.dispatch(setCurrentRowRequest({ payload: { firstRequestedRow: this.startRow } }));
     } 
   }
 
   onSearchYear() {
     this.startRow = 0;
     this.lastRow = PAGE_SIZE;
-    this.store.dispatch(setInitialRowRequest({ payload: { firstRequestedRow: this.startRow, lastRequestedRow: this.lastRow } }));
+    this.store.dispatch(setInitialRowRequest({ payload: { firstRequestedRow: this.startRow } }));
     this.store.dispatch(loadMoviesInitialAction({ search: { year: this.searchYear } }));
   }
 

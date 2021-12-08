@@ -13,7 +13,7 @@ export const loadMoviesForwardAction = createAction(
     props<{ search: Partial<Movie>, startKey: StartKeyInterface }>()
 );
 export const setMoviesInitialAction = createAction(
-    'Movies: Set Movies',
+    'Movies: Set Movies initial',
     props<{ payload: MovieResponse, search:any }>()
 );
 export const setMoviesForwardAction = createAction(
@@ -21,13 +21,14 @@ export const setMoviesForwardAction = createAction(
     props<{ payload: MovieResponse }>()
 );
 
+// This is the component telling the store which rows it wants
 export const setInitialRowRequest = createAction(
-    'Movies: Set Initial Row Request',
-    props<{ payload: { firstRequestedRow: number, lastRequestedRow: number } }>()
-);
+    'Movies: Set initial Row Request',
+    props<{ payload: { firstRequestedRow: number } }>()
+)
 
 // This is the component telling the store which rows it wants
 export const setCurrentRowRequest = createAction(
     'Movies: Set Current Row Request',
-    props<{ payload: { firstRequestedRow: number, lastRequestedRow: number }}>()
+    props<{ payload: { firstRequestedRow: number }}>()
 )
