@@ -1,11 +1,11 @@
-import { Injectable } from "@angular/core";
-import { Actions, concatLatestFrom, createEffect, ofType } from "@ngrx/effects";
+import { Injectable } from '@angular/core';
+import { Actions, concatLatestFrom, createEffect, ofType } from '@ngrx/effects';
 import { concatMap, map, mergeMap, withLatestFrom } from 'rxjs/operators';
-import { select, Store } from "@ngrx/store";
-import { MoviesService } from "../movies.service";
-import { loadMoviesInitialAction, setCurrentRowRequest, setMoviesInitialAction, setMoviesForwardAction } from "./movies.actions";
-import { of, EMPTY } from "rxjs";
-import { selectAll } from "./movies.reducers";
+import { select, Store } from '@ngrx/store';
+import { MoviesService } from '../movies.service';
+import { loadMoviesInitialAction, setCurrentRowRequest, setMoviesInitialAction, setMoviesForwardAction } from './movies.actions';
+import { of, EMPTY } from 'rxjs';
+import { selectAll } from './movies.reducers';
 
 @Injectable()
 export class MoviesEffects {
@@ -34,7 +34,7 @@ export class MoviesEffects {
                 // the key from the last request
                 // See if I have a key for the requested chunk
                 const startRequestRow = action.payload.firstRequestedRow;
-                let requestKey = state.startKeys.find(x => x.firstRow === startRequestRow);
+                const requestKey = state.startKeys.find(x => x.firstRow === startRequestRow);
                 if (requestKey) {
                     return this.service.query(state.currentQuery, requestKey).pipe(
                         map((response) => {
@@ -48,11 +48,9 @@ export class MoviesEffects {
         )
     );
 
-
     constructor(
         private store: Store,
         public service: MoviesService,
         public actions$: Actions
     ) { }
-
 }

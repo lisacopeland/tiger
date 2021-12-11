@@ -10,9 +10,9 @@ export class MoviesService {
 
   constructor(private http: HttpClient) { }
 
-  getMovies(nextCacheParams: any = null) {
-      let params = new HttpParams({ fromObject: nextCacheParams });
-      return this.http.get<MovieResponse>('http://localhost:8081/movies', {params: params});
+  getMovies(nextCacheParams: any = null): Observable<MovieResponse> {
+      const params = new HttpParams({ fromObject: nextCacheParams });
+      return this.http.get<MovieResponse>('http://localhost:8081/movies', {params});
   }
 
   query(search: any = null, nextCacheParams: any = null): Observable<MovieResponse> {
@@ -21,7 +21,7 @@ export class MoviesService {
       params = params.append('startKeyTitle', `${nextCacheParams.startKey.title}`);
       params = params.append('startKeyYear', `${nextCacheParams.startKey.year}`);
     }
-    return this.http.get<MovieResponse>('http://localhost:8081/movies', { params: params });
+    return this.http.get<MovieResponse>('http://localhost:8081/movies', { params });
   }
 
 }

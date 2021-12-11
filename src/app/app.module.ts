@@ -16,6 +16,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { FormsModule } from '@angular/forms';
 import { PaginatorComponent } from './paginator/paginator.component';
+import { PaginatorModule } from 'primeng/paginator';
 
 @NgModule({
   declarations: [
@@ -25,13 +26,14 @@ import { PaginatorComponent } from './paginator/paginator.component';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    PaginatorModule,
     HttpClientModule,
     AppRoutingModule,
     FormsModule,
     TableModule,
     ButtonModule,
     InputNumberModule,
-    FlexLayoutModule, 
+    FlexLayoutModule,
     StoreModule.forRoot({ movies: moviesReducer }),
     EffectsModule.forRoot([MoviesEffects]),
     StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production })

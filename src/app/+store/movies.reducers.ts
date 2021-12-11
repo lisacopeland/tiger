@@ -1,6 +1,6 @@
-import { createFeatureSelector, createReducer, createSelector, on } from "@ngrx/store";
-import { mapToMovies, Movie, StartKeyInterface } from "../movies.api";
-import { setMoviesForwardAction, loadMoviesInitialAction, setMoviesInitialAction, setCurrentRowRequest, setInitialRowRequest } from "./movies.actions";
+import { createFeatureSelector, createReducer, createSelector, on } from '@ngrx/store';
+import { mapToMovies, Movie, StartKeyInterface } from '../movies.api';
+import { setMoviesForwardAction, loadMoviesInitialAction, setMoviesInitialAction, setCurrentRowRequest, setInitialRowRequest } from './movies.actions';
 
 export interface StartKeys {
     firstRow: number;
@@ -8,18 +8,18 @@ export interface StartKeys {
 }
 
 export interface MoviesState {
-    movies: Movie[];
-    startKeys: StartKeys[];
-    currentQuery: any;
-    firstVisibleRow: number;
-    lastRow: number; // The very last row in the data
+    movies: Movie[];      // Array of data displayed on the page
+    startKeys: StartKeys[]; // Array of start keys for each page
+    currentQuery: any;     // The current query for data
+    firstVisibleRow: number; // First visible row on the page
+    lastDbRow: number; // The very last row in the database
     currentLastRow: number;
 }
 
 const initialState: MoviesState = {
     firstVisibleRow: 0,
     currentLastRow: 0,
-    lastRow: -1,
+    lastDbRow: -1,
     currentQuery: null,
     startKeys: [],
     movies: [],
@@ -35,10 +35,10 @@ export const moviesReducer = createReducer(
             movies: [],
             startKeys: [],
             firstVisibleRow: 0,
-            lastRow: -1,
+            lastDbRow: -1,
             currentLastRow: 0,
             currentQuery: null,
-        }
+        };
         return newState;
     }),
     on(setMoviesInitialAction, (state, action) => {
@@ -66,7 +66,7 @@ export const moviesReducer = createReducer(
 
             });
         } else {
-            newState.lastRow = action.payload.Count - 1;
+            newState.lastDbRow = action.payload.Count - 1;
         }
         newState.startKeys = startKeys;
         return newState;
@@ -78,20 +78,21 @@ export const moviesReducer = createReducer(
         };
         // Get the startKey array and get the last startKey
         if (action.payload.last) {
-            newState.lastRow = newState.currentLastRow + (action.payload.Count - 1);
-            newState.currentLastRow = newState.lastRow;
+            newState.lastDbRow = newState.currentLastRow + (action.payload.Count - 1);
+            newState.currentLastRow = newState.lastDbRow;
         } else {
             // See if this startkey already exists, if not, add it
             const newStartKeys = JSON.parse(JSON.stringify(newState.startKeys)) as StartKeys[];
-            const idx = newStartKeys.findIndex(x => x.startKey.title === action.payload.LastEvaluatedKey.title && x.startKey.year === action.payload.LastEvaluatedKey.year);
+            const idx = newStartKeys.findIndex(x =>
+                x.startKey.title === action.payload.LastEvaluatedKey.title && x.startKey.year === action.payload.LastEvaluatedKey.year);
             if (idx === -1) {
                 const nextKey: StartKeys = {
                     firstRow: newState.firstVisibleRow + action.payload.Count,
                     startKey: action.payload.LastEvaluatedKey
-                }
+                };
                 newStartKeys.push(nextKey);
                 newState.startKeys = newStartKeys;
-                newState.currentLastRow += action.payload.Count
+                newState.currentLastRow += action.payload.Count;
             }
         }
 
@@ -102,14 +103,14 @@ export const moviesReducer = createReducer(
         const newState = {
             ...state,
             firstVisibleRow: action.payload.firstRequestedRow
-        }
+        };
         return newState;
     }),
     on(setCurrentRowRequest, (state, action) => {
         const newState = {
             ...state,
             firstVisibleRow: action.payload.firstRequestedRow
-        }
+        };
         return newState;
     })
 );
@@ -128,6 +129,7 @@ export const selectAllMovies = createSelector(selectAll, (state) => {
 
 export const selectLatestQuery = createSelector(selectAll, (state) => state.currentQuery);
 export const selectFirstVisibleRow = createSelector(selectAll, (state) => state.firstVisibleRow);
-export const selectLastRow = createSelector(selectAll, (state) => state.lastRow);
+export const selectLastDbRow = createSelector(selectAll, (state) => state.lastDbRow);
+export const selectCurrentLastRow = createSelector(selectAll, (state) => state.currentLastRow);
 export const selectNumberOfPages = createSelector(selectAll, (state) => state.startKeys.length);
 

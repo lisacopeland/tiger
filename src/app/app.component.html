@@ -20,15 +20,16 @@
         fxLayout="row"
         fxLayoutAlign="start center"
         fxLayoutGap="15px"
-        *ngFor="let movie of movies"
+        *ngFor="let movie of movies; let index = index"
       >
+      {{this.startRow + index}} - 
         {{ movie.title }}
         {{ movie.year }}
       </div>
     </ng-container>
     <ng-template #noData> No Data Available! </ng-template>
   </div>
-<app-paginator 
+<!-- <app-paginator 
   [cangoback]="cangoback" 
   [cangoforward]="cangoforward"
   [showLast]="lastDataRow !== -1"
@@ -36,5 +37,6 @@
   (goForward)="onNext($event)"
   (goBack)="onPrevious($event)"
   (goToPage)="onGotoPage($event)">
-</app-paginator>
+</app-paginator> -->
+<p-paginator [rows]="pageSize" [showJumpToPageDropdown]=true [alwaysShow]=false [totalRecords]="currentTotalRows" (onPageChange)="onPageChange($event)"></p-paginator>
 </div>

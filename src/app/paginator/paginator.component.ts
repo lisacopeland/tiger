@@ -10,7 +10,7 @@ export class PaginatorComponent implements OnInit, OnChanges {
   @Input() cangoforward = false;
   @Input() numberOfPages = 0;
   @Input() showLast = false;
-  @Output() goForward:EventEmitter<string> = new EventEmitter();
+  @Output() goForward: EventEmitter<string> = new EventEmitter();
   @Output() goBack: EventEmitter<string> = new EventEmitter();
   @Output() goToPage: EventEmitter<string> = new EventEmitter();
 
@@ -20,34 +20,35 @@ export class PaginatorComponent implements OnInit, OnChanges {
   ngOnInit(): void {
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
+    // tslint:disable-next-line: no-string-literal
     if (changes['numberOfPages']) {
       this.pageArray = [];
       if (this.numberOfPages < 5) {
         for (let i = 1; i <= this.numberOfPages; i++) {
           this.pageArray.push(i);
-        } 
+        }
       } else if (this.numberOfPages < 25) {
         for (let i = 1; i < 5; i++) {
           this.pageArray.push(i);
         }
-        for (let i = 5; i <= this.numberOfPages; i+=5) {
+        for (let i = 5; i <= this.numberOfPages; i += 5) {
           this.pageArray.push(i);
         }
       }
     }
   }
 
-  onGotoPage($event) {
+  onGotoPage($event): void {
 
     this.goToPage.emit($event);
   }
 
-  onNext($event) {
+  onNext($event): void {
     this.goForward.emit('go forward');
   }
 
-  onPrevious($event) {
+  onPrevious($event): void {
     this.goBack.emit('go back');
   }
 }
